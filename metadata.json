@@ -1,0 +1,6 @@
+{
+  "name": "RA Almaqom - Mading Digital Raudhatul Athfal",
+  "description": "Website resmi RA Almaqom dengan konsep Digital Scrapbook dan Mading Sekolah. Menampilkan info PPDB TA 2027/2028, mading prestasi siswa, kurikulum islami, dan CMS admin.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

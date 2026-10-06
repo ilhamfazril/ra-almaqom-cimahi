@@ -133,14 +133,22 @@ export const INITIAL_PRESTASI: PrestasiItem[] = [
 ];
 
 // Firebase Client Configuration
-// Supports environment variables (Vite / Next.js compatible)
+// Supports environment variables (Vite & Vercel compatible)
+const getEnv = (viteKey: string, nextKey?: string): string => {
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    if (import.meta.env[viteKey]) return String(import.meta.env[viteKey]);
+    if (nextKey && import.meta.env[nextKey]) return String(import.meta.env[nextKey]);
+  }
+  return '';
+};
+
 const firebaseConfig = {
-  apiKey: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FIREBASE_API_KEY) || "AIzaSyD-mock-almaqom-dev-key",
-  authDomain: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN) || "ra-almaqom.firebaseapp.com",
-  projectId: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FIREBASE_PROJECT_ID) || "ra-almaqom",
-  storageBucket: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FIREBASE_STORAGE_BUCKET) || "ra-almaqom.appspot.com",
-  messagingSenderId: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FIREBASE_MESSAGING_SENDER_ID) || "123456789012",
-  appId: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FIREBASE_APP_ID) || "1:123456789012:web:almaqom123",
+  apiKey: getEnv('VITE_FIREBASE_API_KEY', 'NEXT_PUBLIC_FIREBASE_API_KEY') || "AIzaSyD-mock-almaqom-dev-key",
+  authDomain: getEnv('VITE_FIREBASE_AUTH_DOMAIN', 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN') || "ra-almaqom.firebaseapp.com",
+  projectId: getEnv('VITE_FIREBASE_PROJECT_ID', 'NEXT_PUBLIC_FIREBASE_PROJECT_ID') || "ra-almaqom",
+  storageBucket: getEnv('VITE_FIREBASE_STORAGE_BUCKET', 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET') || "ra-almaqom.appspot.com",
+  messagingSenderId: getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID') || "123456789012",
+  appId: getEnv('VITE_FIREBASE_APP_ID', 'NEXT_PUBLIC_FIREBASE_APP_ID') || "1:123456789012:web:almaqom123",
 };
 
 let app: FirebaseApp | null = null;
@@ -154,11 +162,11 @@ try {
     app = getApp();
   }
   db = getFirestore(app);
-  // Check if real config or mock
+  // Check if real config is provided or using fallback mock
   if (
     firebaseConfig.apiKey && 
     !firebaseConfig.apiKey.includes('mock') && 
-    firebaseConfig.projectId !== 'ra-almaqom'
+    firebaseConfig.apiKey !== "AIzaSyD-mock-almaqom-dev-key"
   ) {
     isFirestoreAvailable = true;
   }

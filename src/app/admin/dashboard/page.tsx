@@ -559,6 +559,15 @@ export default function AdminDashboardPage({ onNavigate }: AdminDashboardProps) 
                 <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono font-bold bg-[#E8DFD1] text-[#3D3028] border border-[#3D3028] rounded">
                   Admin Panel
                 </span>
+                {isFirestoreAvailable ? (
+                  <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 rounded">
+                    🟢 Cloud Firestore Aktif
+                  </span>
+                ) : (
+                  <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-100 text-amber-800 border border-amber-300 rounded" title="Data tersimpan di browser ini. Masukkan Environment Variables di Vercel agar data tersinkron ke semua perangkat.">
+                    🟡 Mode Lokal (Belum Ada Kunci Vercel)
+                  </span>
+                )}
               </div>
               <p className="text-[11px] text-[#6B6357] hidden sm:block">
                 Pusat Kontrol Mading, Guru, Sambutan, Fasilitas, Kontak & PPDB

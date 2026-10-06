@@ -65,6 +65,17 @@ export const PRESET_FOTO_PRESTASI = [
 // Initial seed data for authentic RA Almaqom scrapbook mading
 export const INITIAL_PRESTASI: PrestasiItem[] = [
   {
+    id: 'p0-matamuda',
+    namaSiswa: 'Siswa Baru RA Almaqom',
+    judul: 'Kegiatan Matamuda',
+    kategori: 'Sains Cilik & Kognitif',
+    tahun: '2026/2027',
+    keterangan: 'KEGIATAN MATAMUDA ( Masa Ta\'aruf Murid Madrasah ) - Pengenalan lingkungan belajar ceria, ramah dan menyenangkan.',
+    warnaKertas: 'cream',
+    rotasi: 0,
+    fotoUrl: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80',
+  },
+  {
     id: 'p1',
     namaSiswa: 'Aisyah Humaira (Kelompok B)',
     judul: 'Juara 1 Tahfidz Juz 30 & Tartil Merdu',
@@ -159,7 +170,49 @@ export { app, db, isFirestoreAvailable };
 
 const LOCAL_STORAGE_KEY = 'ra_almaqom_prestasi_cache';
 
-// Helper to access LocalStorage cache
+// Client-side image compression to prevent exceeding browser localStorage quota (5MB limit)
+export function compressImage(fileOrBase64: File | string, maxWidth = 1000, quality = 0.82): Promise<string> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      return resolve(typeof fileOrBase64 === 'string' ? fileOrBase64 : '');
+    }
+    // If it's an external URL (http/https), return as is
+    if (typeof fileOrBase64 === 'string' && !fileOrBase64.startsWith('data:image')) {
+      return resolve(fileOrBase64);
+    }
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return resolve(typeof fileOrBase64 === 'string' ? fileOrBase64 : '');
+      ctx.drawImage(img, 0, 0, width, height);
+      // Produce compressed JPEG data URL
+      const compressed = canvas.toDataURL('image/jpeg', quality);
+      resolve(compressed);
+    };
+    img.onerror = () => {
+      resolve(typeof fileOrBase64 === 'string' ? fileOrBase64 : '');
+    };
+    if (typeof fileOrBase64 === 'string') {
+      img.src = fileOrBase64;
+    } else {
+      const reader = new FileReader();
+      reader.onload = () => {
+        img.src = reader.result as string;
+      };
+      reader.readAsDataURL(fileOrBase64);
+    }
+  });
+}
+
+// Helper to access LocalStorage cache with seamless resilience
 export function getLocalPrestasi(): PrestasiItem[] {
   if (typeof window === 'undefined') return INITIAL_PRESTASI;
   try {
@@ -169,7 +222,18 @@ export function getLocalPrestasi(): PrestasiItem[] {
       return INITIAL_PRESTASI;
     }
     const parsed = JSON.parse(data);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_PRESTASI;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      // Ensure that user-uploaded items like Matamuda are safely retained
+      const hasMatamuda = parsed.some((p: PrestasiItem) => p.judul?.toLowerCase().includes('matamuda'));
+      if (!hasMatamuda && INITIAL_PRESTASI.length > 0) {
+        const merged = [INITIAL_PRESTASI[0], ...parsed];
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+        return merged;
+      }
+      return parsed;
+    }
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(INITIAL_PRESTASI));
+    return INITIAL_PRESTASI;
   } catch (err) {
     console.error("Error reading local prestasi:", err);
     return INITIAL_PRESTASI;
@@ -531,7 +595,18 @@ export function getSchoolProfile(): SchoolProfile {
   if (typeof window === 'undefined') return DEFAULT_SCHOOL_PROFILE;
   try {
     const saved = localStorage.getItem(SCHOOL_PROFILE_KEY);
-    return saved ? { ...DEFAULT_SCHOOL_PROFILE, ...JSON.parse(saved) } : DEFAULT_SCHOOL_PROFILE;
+    const savedLogo = localStorage.getItem(SCHOOL_LOGO_KEY);
+    let profile = DEFAULT_SCHOOL_PROFILE;
+    if (saved) {
+      try {
+        profile = { ...DEFAULT_SCHOOL_PROFILE, ...JSON.parse(saved) };
+      } catch {}
+    }
+    // Always preserve and prioritize custom uploaded school logo
+    if (savedLogo && savedLogo.trim() !== '' && savedLogo !== DEFAULT_SCHOOL_LOGO) {
+      profile.logoUrl = savedLogo;
+    }
+    return profile;
   } catch {
     return DEFAULT_SCHOOL_PROFILE;
   }
@@ -541,12 +616,16 @@ export async function setSchoolProfile(profile: Partial<SchoolProfile>): Promise
   const current = getSchoolProfile();
   const updated = { ...current, ...profile };
   if (typeof window !== 'undefined') {
-    localStorage.setItem(SCHOOL_PROFILE_KEY, JSON.stringify(updated));
-    if (profile.logoUrl) {
-      localStorage.setItem('ra_almaqom_school_logo', profile.logoUrl);
-      window.dispatchEvent(new CustomEvent('school_logo_updated', { detail: profile.logoUrl }));
+    try {
+      localStorage.setItem(SCHOOL_PROFILE_KEY, JSON.stringify(updated));
+      if (updated.logoUrl && updated.logoUrl !== DEFAULT_SCHOOL_LOGO) {
+        localStorage.setItem(SCHOOL_LOGO_KEY, updated.logoUrl);
+        window.dispatchEvent(new CustomEvent('school_logo_updated', { detail: updated.logoUrl }));
+      }
+      window.dispatchEvent(new CustomEvent('school_profile_updated', { detail: updated }));
+    } catch (e) {
+      console.warn("Storage write error for profile:", e);
     }
-    window.dispatchEvent(new CustomEvent('school_profile_updated', { detail: updated }));
   }
   if (db && isFirestoreAvailable) {
     try {
@@ -946,7 +1025,11 @@ export async function setSchoolLogo(logoUrl: string): Promise<void> {
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem(SCHOOL_LOGO_KEY, value);
+      const current = getSchoolProfile();
+      const updatedProfile = { ...current, logoUrl: value };
+      localStorage.setItem(SCHOOL_PROFILE_KEY, JSON.stringify(updatedProfile));
       window.dispatchEvent(new CustomEvent('school_logo_updated', { detail: value }));
+      window.dispatchEvent(new CustomEvent('school_profile_updated', { detail: updatedProfile }));
     } catch (e) {
       console.error("Error saving logo:", e);
     }

@@ -72,7 +72,9 @@ import {
   deletePpdbSubmission,
   subscribeToPpdbSubmissions,
   PpdbSubmission,
-  DEFAULT_SCHOOL_LOGO
+  DEFAULT_SCHOOL_LOGO,
+  compressImage,
+  setSchoolLogo
 } from '../../../config/firebase';
 import { ADMIN_AUTH_KEY } from '../login/page';
 
@@ -219,21 +221,16 @@ export default function AdminDashboardPage({ onNavigate }: AdminDashboardProps) 
   // -------------------------------------------------------------
   // HANDLERS: TAB 1 (PRESTASI)
   // -------------------------------------------------------------
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 4 * 1024 * 1024) {
-      showNotice('error', 'Ukuran foto maksimal 4MB.');
-      return;
+    try {
+      const compressed = await compressImage(file, 1000, 0.82);
+      setPrestasiForm((prev) => ({ ...prev, fotoUrl: compressed }));
+      showNotice('success', `Foto "${file.name}" siap ditempel (sudah dioptimalkan).`);
+    } catch {
+      showNotice('error', 'Gagal memproses foto.');
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setPrestasiForm((prev) => ({ ...prev, fotoUrl: reader.result as string }));
-        showNotice('success', `Foto "${file.name}" siap ditempel.`);
-      }
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleStartEditPrestasi = (item: PrestasiItem) => {
@@ -331,31 +328,29 @@ export default function AdminDashboardPage({ onNavigate }: AdminDashboardProps) 
   // -------------------------------------------------------------
   // HANDLERS: TAB 2 (PROFIL & SAMBUTAN)
   // -------------------------------------------------------------
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async () => {
-      if (typeof reader.result === 'string') {
-        const logoData = reader.result as string;
-        await setSchoolProfile({ logoUrl: logoData });
-        showNotice('success', 'Logo bulat sekolah berhasil diperbarui!');
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const compressed = await compressImage(file, 600, 0.9);
+      await setSchoolLogo(compressed);
+      await setSchoolProfile({ logoUrl: compressed });
+      showNotice('success', 'Logo bulat sekolah berhasil diperbarui & disimpan aman!');
+    } catch {
+      showNotice('error', 'Gagal memproses logo sekolah.');
+    }
   };
 
-  const handleKepalaFotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleKepalaFotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setSchoolProfileState((prev) => ({ ...prev, kepalaSekolahFotoUrl: reader.result as string }));
-        showNotice('success', 'Foto Kepala Sekolah siap disimpan.');
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const compressed = await compressImage(file, 800, 0.82);
+      setSchoolProfileState((prev) => ({ ...prev, kepalaSekolahFotoUrl: compressed }));
+      showNotice('success', 'Foto Kepala Sekolah diproses & siap disimpan.');
+    } catch {
+      showNotice('error', 'Gagal memproses foto.');
+    }
   };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -374,17 +369,16 @@ export default function AdminDashboardPage({ onNavigate }: AdminDashboardProps) 
   // -------------------------------------------------------------
   // HANDLERS: TAB 3 (DEWAN GURU)
   // -------------------------------------------------------------
-  const handleGuruFotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGuruFotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setGuruForm((prev) => ({ ...prev, fotoUrl: reader.result as string }));
-        showNotice('success', `Foto Ustadzah siap digunakan.`);
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const compressed = await compressImage(file, 800, 0.82);
+      setGuruForm((prev) => ({ ...prev, fotoUrl: compressed }));
+      showNotice('success', `Foto Ustadzah siap digunakan.`);
+    } catch {
+      showNotice('error', 'Gagal memproses foto.');
+    }
   };
 
   const handleSaveGuru = async (e: React.FormEvent) => {
@@ -423,17 +417,16 @@ export default function AdminDashboardPage({ onNavigate }: AdminDashboardProps) 
   // -------------------------------------------------------------
   // HANDLERS: TAB 4 (FASILITAS)
   // -------------------------------------------------------------
-  const handleFasilitasFotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFasilitasFotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setFasilitasForm((prev) => ({ ...prev, fotoUrl: reader.result as string }));
-        showNotice('success', 'Foto fasilitas siap disimpan.');
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const compressed = await compressImage(file, 1000, 0.82);
+      setFasilitasForm((prev) => ({ ...prev, fotoUrl: compressed }));
+      showNotice('success', 'Foto fasilitas siap disimpan.');
+    } catch {
+      showNotice('error', 'Gagal memproses foto.');
+    }
   };
 
   const handleSaveFasilitas = async (e: React.FormEvent) => {

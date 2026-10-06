@@ -476,37 +476,156 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       <FloatingWhatsApp />
 
       {/* 
-        FOOTER RESMI
+        FOOTER RESMI: MULTI-COLUMN STRUCTURED SCRAPBOOK DESIGN
       */}
-      <footer className="bg-[#1C1917] text-[#FAF6EE] py-10 px-4 sm:px-6 lg:px-8 border-t-4 border-[#5B8266]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full border-2 border-white bg-white p-0.5 overflow-hidden">
-              <img src={schoolLogo} alt="Logo" className="w-full h-full object-contain" />
+      <footer className="bg-[#1C1917] text-[#FAF6EE] pt-14 pb-8 px-4 sm:px-6 lg:px-8 border-t-4 border-[#5B8266]">
+        <div className="max-w-7xl mx-auto">
+          
+          {/* Main 4-Column Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-12 border-b border-stone-800">
+            
+            {/* Column 1: Brand & Identity (4 Cols) */}
+            <div className="lg:col-span-4 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full border-2 border-white bg-white p-0.5 overflow-hidden shrink-0 shadow-md">
+                  <img 
+                    src={schoolLogo} 
+                    alt="Logo RA Almaqom" 
+                    className="w-full h-full object-contain rounded-full aspect-square" 
+                  />
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-lg text-white tracking-tight">
+                    RA Almaqom
+                  </h4>
+                  <p className="text-xs text-[#5B8266] font-mono font-bold">
+                    Raudhatul Athfal Terakreditasi
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs text-stone-400 leading-relaxed max-w-sm">
+                Lembaga pendidikan anak usia dini yang menumbuhkan fitrah tauhid, kemandirian akhlak, kecerdasan motorik, dan kecintaan Al-Qur'an sejak langkah pertama.
+              </p>
+
+              {/* Status Badge */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-750 text-[11px] text-stone-300 font-mono">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Penerimaan Santri Baru TA 2027/2028 Aktif</span>
+              </div>
             </div>
-            <div>
-              <h4 className="font-extrabold text-base tracking-tight">Raudhatul Athfal (RA) Almaqom</h4>
-              <p className="text-xs text-stone-400 font-mono">Pendidikan Islam Usia Dini Ramah Fitrah Anak</p>
+
+            {/* Column 2: Profil & Pendidik (3 Cols) */}
+            <div className="lg:col-span-3 space-y-3">
+              <h5 className="text-xs font-bold font-mono tracking-wider text-[#D96B43] uppercase">
+                Profil & Pembelajaran
+              </h5>
+              <ul className="space-y-2 text-xs text-stone-300">
+                <li>
+                  <a href="#sambutan" className="hover:text-white transition-colors flex items-center gap-1.5 group">
+                    <span className="text-stone-600 group-hover:text-[#5B8266] transition-colors">›</span>
+                    <span>Sambutan Kepala RA</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#guru" className="hover:text-white transition-colors flex items-center gap-1.5 group">
+                    <span className="text-stone-600 group-hover:text-[#5B8266] transition-colors">›</span>
+                    <span>Dewan Guru & Ustadzah</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#program" className="hover:text-white transition-colors flex items-center gap-1.5 group">
+                    <span className="text-stone-600 group-hover:text-[#5B8266] transition-colors">›</span>
+                    <span>4 Sentra Tumbuh Kembang</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#fasilitas" className="hover:text-white transition-colors flex items-center gap-1.5 group">
+                    <span className="text-stone-600 group-hover:text-[#5B8266] transition-colors">›</span>
+                    <span>Fasilitas Ramah Anak</span>
+                  </a>
+                </li>
+              </ul>
             </div>
+
+            {/* Column 3: Informasi & Publikasi (2 Cols) */}
+            <div className="lg:col-span-2 space-y-3">
+              <h5 className="text-xs font-bold font-mono tracking-wider text-[#D96B43] uppercase">
+                Informasi & Mading
+              </h5>
+              <ul className="space-y-2 text-xs text-stone-300">
+                <li>
+                  <a href="#mading-prestasi" className="hover:text-white transition-colors flex items-center gap-1.5 group">
+                    <span className="text-stone-600 group-hover:text-[#5B8266] transition-colors">›</span>
+                    <span>Mading Prestasi Santri</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#testimoni" className="hover:text-white transition-colors flex items-center gap-1.5 group">
+                    <span className="text-stone-600 group-hover:text-[#5B8266] transition-colors">›</span>
+                    <span>Catatan Ayah & Bunda</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#faq" className="hover:text-white transition-colors flex items-center gap-1.5 group">
+                    <span className="text-stone-600 group-hover:text-[#5B8266] transition-colors">›</span>
+                    <span>Tanya Jawab (FAQ)</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#kontak" className="hover:text-white transition-colors flex items-center gap-1.5 group">
+                    <span className="text-stone-600 group-hover:text-[#5B8266] transition-colors">›</span>
+                    <span>Kontak & Lokasi Maps</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4: Layanan & Akses Cepat (3 Cols) */}
+            <div className="lg:col-span-3 space-y-3">
+              <h5 className="text-xs font-bold font-mono tracking-wider text-[#D96B43] uppercase">
+                Gerbang Layanan
+              </h5>
+              <div className="space-y-2.5">
+                <button
+                  onClick={() => setPpdbModalOpen(true)}
+                  className="w-full py-2.5 px-3 bg-[#5B8266] hover:bg-[#4E7257] text-white text-xs font-bold rounded-xl border border-white/20 shadow-sm transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Daftar Santri Baru (PPDB)</span>
+                </button>
+
+                <button
+                  onClick={() => navigateTo('/admin/login')}
+                  className="w-full py-2 px-3 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white text-xs font-semibold rounded-xl border border-stone-700 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Lock className="w-3.5 h-3.5 text-[#E07A5F]" />
+                  <span>Portal CMS Guru & Admin</span>
+                </button>
+
+                <p className="text-[11px] text-stone-500 font-mono pt-1 text-center sm:text-left">
+                  Jam Kantor: Senin - Jumat (07.30 - 14.00 WIB)
+                </p>
+              </div>
+            </div>
+
           </div>
 
-          <div className="flex items-center gap-6 text-xs text-stone-300 font-medium">
-            <a href="#sambutan" className="hover:text-white">Sambutan</a>
-            <a href="#guru" className="hover:text-white">Guru</a>
-            <a href="#fasilitas" className="hover:text-white">Fasilitas</a>
-            <a href="#mading-prestasi" className="hover:text-white">Mading</a>
-            <a href="#kontak" className="hover:text-white">Kontak</a>
-            <button 
-              onClick={() => navigateTo('/admin/login')} 
-              className="text-[#E07A5F] hover:underline font-bold"
+          {/* Bottom Bar: Copyright & Back to Top */}
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+            <p className="font-mono text-center sm:text-left">
+              © {new Date().getFullYear()} RA Almaqom. Seluruh Hak Cipta Dilindungi Undang-Undang.
+            </p>
+
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="text-stone-400 hover:text-white transition-colors flex items-center gap-1.5 font-bold cursor-pointer"
             >
-              CMS Admin
+              <span>Kembali ke Atas</span>
+              <span className="text-sm">↑</span>
             </button>
           </div>
-        </div>
 
-        <div className="max-w-7xl mx-auto mt-8 pt-6 border-t border-stone-800 text-center text-xs text-stone-500 font-mono">
-          © {new Date().getFullYear()} RA Almaqom. Seluruh Hak Cipta Dilindungi Undang-Undang.
         </div>
       </footer>
 

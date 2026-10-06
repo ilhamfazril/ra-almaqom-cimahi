@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Prestasi Mading: Publik dapat membaca, pengelola dapat menambah, mengubah, dan menghapus
+    match /prestasi/{prestasiId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Pengaturan Sekolah (Profil, Sambutan, Guru, Fasilitas, Testimoni, Kontak):
+    // Publik dapat membaca, pengelola dapat mengubah
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Formulir PPDB: Siapa pun (wali murid) dapat mengirimkan formulir baru
+    match /ppdb_submissions/{submissionId} {
+      allow create: if true;
+      allow read, update, delete: if true;
+    }
+
+    // Default deny untuk koleksi lainnya
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

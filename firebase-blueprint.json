@@ -1,0 +1,56 @@
+{
+  "entities": {
+    "Prestasi": {
+      "title": "Prestasi",
+      "description": "Karya dan prestasi santri RA Almaqom",
+      "type": "object",
+      "properties": {
+        "namaSiswa": { "type": "string", "description": "Nama santri atau kelompok" },
+        "judul": { "type": "string", "description": "Judul prestasi atau kejuaraan" },
+        "kategori": { "type": "string", "description": "Kategori bidang lomba" },
+        "tahun": { "type": "string", "description": "Tahun ajaran prestasi" },
+        "keterangan": { "type": "string", "description": "Catatan singkat prestasi" },
+        "warnaKertas": { "type": "string", "description": "Tema warna kertas memo" },
+        "rotasi": { "type": "number", "description": "Derajat rotasi kertas mading" },
+        "fotoUrl": { "type": "string", "description": "URL foto polaroid dokumentasi" }
+      },
+      "required": ["namaSiswa", "judul"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Pengaturan sekolah, profil, dewan guru, fasilitas, testimoni, kontak",
+      "type": "object",
+      "properties": {
+        "logoUrl": { "type": "string", "description": "Logo sekolah" },
+        "items": { "type": "array", "description": "Daftar item dewan guru, fasilitas, atau testimoni" }
+      }
+    },
+    "PpdbSubmission": {
+      "title": "PpdbSubmission",
+      "description": "Formulir pendaftaran calon santri baru online",
+      "type": "object",
+      "properties": {
+        "namaAnak": { "type": "string", "description": "Nama lengkap calon santri" },
+        "usiaAnak": { "type": "string", "description": "Jenjang usia atau kelompok" },
+        "namaWali": { "type": "string", "description": "Nama ayah atau bunda wali santri" },
+        "noWhatsapp": { "type": "string", "description": "Nomor WhatsApp aktif" },
+        "pesan": { "type": "string", "description": "Catatan khusus dari orang tua" }
+      },
+      "required": ["namaAnak", "noWhatsapp"]
+    }
+  },
+  "firestore": {
+    "/prestasi/{prestasiId}": {
+      "schema": "Prestasi",
+      "description": "Koleksi data prestasi santri pada papan mading sekolah"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "Pengaturan profil sekolah, sambutan, dewan guru, fasilitas, dan kontak"
+    },
+    "/ppdb_submissions/{submissionId}": {
+      "schema": "PpdbSubmission",
+      "description": "Pendaftaran calon santri baru online dari website"
+    }
+  }
+}

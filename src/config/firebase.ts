@@ -12,8 +12,10 @@ import {
   query, 
   orderBy, 
   serverTimestamp,
+  getDocFromServer,
   Firestore 
 } from 'firebase/firestore';
+import firebaseAppletConfig from '../../firebase-applet-config.json';
 
 export interface PrestasiItem {
   id: string;
@@ -143,12 +145,12 @@ const getEnv = (viteKey: string, nextKey?: string): string => {
 };
 
 const firebaseConfig = {
-  apiKey: getEnv('VITE_FIREBASE_API_KEY', 'NEXT_PUBLIC_FIREBASE_API_KEY') || "AIzaSyD-mock-almaqom-dev-key",
-  authDomain: getEnv('VITE_FIREBASE_AUTH_DOMAIN', 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN') || "ra-almaqom.firebaseapp.com",
-  projectId: getEnv('VITE_FIREBASE_PROJECT_ID', 'NEXT_PUBLIC_FIREBASE_PROJECT_ID') || "ra-almaqom",
-  storageBucket: getEnv('VITE_FIREBASE_STORAGE_BUCKET', 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET') || "ra-almaqom.appspot.com",
-  messagingSenderId: getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID') || "123456789012",
-  appId: getEnv('VITE_FIREBASE_APP_ID', 'NEXT_PUBLIC_FIREBASE_APP_ID') || "1:123456789012:web:almaqom123",
+  apiKey: getEnv('VITE_FIREBASE_API_KEY', 'NEXT_PUBLIC_FIREBASE_API_KEY') || firebaseAppletConfig?.apiKey || "AIzaSyD-mock-almaqom-dev-key",
+  authDomain: getEnv('VITE_FIREBASE_AUTH_DOMAIN', 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN') || firebaseAppletConfig?.authDomain || "ra-almaqom.firebaseapp.com",
+  projectId: getEnv('VITE_FIREBASE_PROJECT_ID', 'NEXT_PUBLIC_FIREBASE_PROJECT_ID') || firebaseAppletConfig?.projectId || "ra-almaqom",
+  storageBucket: getEnv('VITE_FIREBASE_STORAGE_BUCKET', 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET') || firebaseAppletConfig?.storageBucket || "ra-almaqom.appspot.com",
+  messagingSenderId: getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID') || firebaseAppletConfig?.messagingSenderId || "123456789012",
+  appId: getEnv('VITE_FIREBASE_APP_ID', 'NEXT_PUBLIC_FIREBASE_APP_ID') || firebaseAppletConfig?.appId || "1:123456789012:web:almaqom123",
 };
 
 let app: FirebaseApp | null = null;
@@ -161,8 +163,15 @@ try {
   } else {
     app = getApp();
   }
-  db = getFirestore(app);
-  // Check if real config is provided or using fallback mock
+  
+  const customDbId = firebaseAppletConfig?.firestoreDatabaseId;
+  if (customDbId) {
+    db = getFirestore(app, customDbId);
+  } else {
+    db = getFirestore(app);
+  }
+
+  // Check if real config is provided
   if (
     firebaseConfig.apiKey && 
     !firebaseConfig.apiKey.includes('mock') && 
@@ -172,6 +181,19 @@ try {
   }
 } catch (error) {
   console.warn("Firestore initialization fallback active:", error);
+}
+
+// Test connection on boot as recommended by skill
+if (db && isFirestoreAvailable) {
+  (async () => {
+    try {
+      await getDocFromServer(doc(db, 'test', 'connection'));
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('the client is offline')) {
+        console.error("Please check your Firebase configuration.");
+      }
+    }
+  })();
 }
 
 export { app, db, isFirestoreAvailable };

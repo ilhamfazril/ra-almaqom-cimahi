@@ -145,12 +145,12 @@ const getEnv = (viteKey: string, nextKey?: string): string => {
 };
 
 const firebaseConfig = {
-  apiKey: getEnv('VITE_FIREBASE_API_KEY', 'NEXT_PUBLIC_FIREBASE_API_KEY') || firebaseAppletConfig?.apiKey || "AIzaSyD-mock-almaqom-dev-key",
-  authDomain: getEnv('VITE_FIREBASE_AUTH_DOMAIN', 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN') || firebaseAppletConfig?.authDomain || "ra-almaqom.firebaseapp.com",
-  projectId: getEnv('VITE_FIREBASE_PROJECT_ID', 'NEXT_PUBLIC_FIREBASE_PROJECT_ID') || firebaseAppletConfig?.projectId || "ra-almaqom",
-  storageBucket: getEnv('VITE_FIREBASE_STORAGE_BUCKET', 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET') || firebaseAppletConfig?.storageBucket || "ra-almaqom.appspot.com",
-  messagingSenderId: getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID') || firebaseAppletConfig?.messagingSenderId || "123456789012",
-  appId: getEnv('VITE_FIREBASE_APP_ID', 'NEXT_PUBLIC_FIREBASE_APP_ID') || firebaseAppletConfig?.appId || "1:123456789012:web:almaqom123",
+  apiKey: getEnv('VITE_FIREBASE_API_KEY', 'NEXT_PUBLIC_FIREBASE_API_KEY') || firebaseAppletConfig?.apiKey || "AIzaSyADw1rMo-kXAdR5zqfttSZf3bENiRkwpHQ",
+  authDomain: getEnv('VITE_FIREBASE_AUTH_DOMAIN', 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN') || firebaseAppletConfig?.authDomain || "decisive-emitter-hds98.firebaseapp.com",
+  projectId: getEnv('VITE_FIREBASE_PROJECT_ID', 'NEXT_PUBLIC_FIREBASE_PROJECT_ID') || firebaseAppletConfig?.projectId || "decisive-emitter-hds98",
+  storageBucket: getEnv('VITE_FIREBASE_STORAGE_BUCKET', 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET') || firebaseAppletConfig?.storageBucket || "decisive-emitter-hds98.firebasestorage.app",
+  messagingSenderId: getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID') || firebaseAppletConfig?.messagingSenderId || "30956939153",
+  appId: getEnv('VITE_FIREBASE_APP_ID', 'NEXT_PUBLIC_FIREBASE_APP_ID') || firebaseAppletConfig?.appId || "1:30956939153:web:f70e253134ddd9e118dc30",
 };
 
 let app: FirebaseApp | null = null;
@@ -164,21 +164,15 @@ try {
     app = getApp();
   }
   
-  const customDbId = firebaseAppletConfig?.firestoreDatabaseId;
+  const customDbId = getEnv('VITE_FIREBASE_DATABASE_ID', 'NEXT_PUBLIC_FIREBASE_DATABASE_ID') || firebaseAppletConfig?.firestoreDatabaseId || "ai-studio-raalmaqommadingd-b0e7d9c2-5118-4fb5-9d3c-b55d334914c4";
   if (customDbId) {
     db = getFirestore(app, customDbId);
   } else {
     db = getFirestore(app);
   }
 
-  // Check if real config is provided
-  if (
-    firebaseConfig.apiKey && 
-    !firebaseConfig.apiKey.includes('mock') && 
-    firebaseConfig.apiKey !== "AIzaSyD-mock-almaqom-dev-key"
-  ) {
-    isFirestoreAvailable = true;
-  }
+  // Real database is now permanently connected
+  isFirestoreAvailable = true;
 } catch (error) {
   console.warn("Firestore initialization fallback active:", error);
 }
